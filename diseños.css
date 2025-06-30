@@ -1,0 +1,69 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 40px;
+  background: #f7f7fa;
+}
+h2, h3 {
+  color: #204060;
+}
+table {
+  width: 70%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  background: white;
+  box-shadow: 0 2px 8px #0001;
+}
+th, td {
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  text-align: left;
+}
+th {
+  background: #e3ecf7;
+}
+tr:nth-child(even) {
+  background: #f2f6fa;
+}
+button {
+  margin: 0 2px;
+  padding: 5px 14px;
+  background: #2d7dd2;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+button:hover {
+  background: #125ea5;
+}
+form {
+  background: #fff;
+  padding: 15px 20px;
+  border-radius: 6px;
+  width: 320px;
+  box-shadow: 0 2px 8px #0001;
+  margin-top: 20px;
+}
+label {
+  display: block;
+  margin: 10px 0 4px 0;
+}
+input[type="number"],
+input[type="text"] {
+  width: 90%;
+  padding: 5px 8px;
+  border: 1px solid #bcd;
+  border-radius: 3px;
+  margin-bottom: 8px;
+  font-size: 15px;
+}
+#msg {
+  margin-top: 15px;
+  color: #165a1b;
+  font-weight: bold;
+}
+body { background: #f7f7fa; }
+h2 { font-weight: bold; }
+#tabla td, #tabla th { vertical-align: middle; }
+#alerta { position: fixed; top: 15px; right: 30px; z-index: 2000; min-width: 250px; }
