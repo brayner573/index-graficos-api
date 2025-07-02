@@ -1,7 +1,7 @@
 // app.js
 
 // Cambia esta IP por la de tu EC2 si cambia:
-const api = "http://3.82.141.182/data";
+const api = "http://52.91.244.151/data";
 let registrosActuales = [];
 let idEliminar = null;
 
@@ -9,149 +9,164 @@ let idEliminar = null;
 let clasificacionChart, anoChart, semanaChart;
 
 function cargarDatos() {
-  fetch(api)
-    .then(res => res.json())
-    .then(data => {
-      registrosActuales = data;
-      let rows = "";
-      data.forEach(r => {
-        rows += `<tr>
-          <td>${r.id}</td>
-          <td>${r.ano}</td>
-          <td>${r.semana}</td>
-          <td>${r.clasificacion}</td>
-          <td>
-            <button class="btn btn-warning btn-sm" onclick="editar(${r.id})">Editar</button>
-            <button class="btn btn-danger btn-sm" onclick="confirmarEliminar(${r.id})">Eliminar</button>
-          </td>
-        </tr>`;
-      });
-      document.getElementById("tbody").innerHTML = rows;
+  fetch(api)
+    .then(res => res.json())
+    .then(data => {
+      registrosActuales = data;
+      let rows = "";
+      data.forEach(r => {
+        rows += `<tr>
+          <td>${r.id}</td>
+          <td>${r.ano}</td>
+          <td>${r.semana}</td>
+          <td>${r.clasificacion}</td>
+          <td>
+            <button class="btn btn-warning btn-sm" onclick="editar(${r.id})">Editar</button>
+            <button class="btn btn-danger btn-sm" onclick="confirmarEliminar(${r.id})">Eliminar</button>
+          </td>
+        </tr>`;
+      });
+      document.getElementById("tbody").innerHTML = rows;
 
       // --- Llama a la función para actualizar los gráficos después de cargar los datos ---
       updateCharts(data);
-    })
+    })
     .catch(error => {
-        console.error("Error al cargar los datos:", error);
-        mostrarAlerta("Error al cargar los registros desde la API.", "danger");
+      console.error("Error al cargar los datos:", error);
+      mostrarAlerta("Error al cargar los registros desde la API.", "danger");
     });
 }
 
 function mostrarAlerta(msg, tipo = "success") {
-  const alerta = document.getElementById("alerta");
-  alerta.innerText = msg;
-  alerta.className = `alert alert-${tipo}`;
-  alerta.classList.remove("d-none");
-  setTimeout(() => alerta.classList.add("d-none"), 2000);
+  const alerta = document.getElementById("alerta");
+  alerta.innerText = msg;
+  alerta.className = `alert alert-${tipo}`;
+  alerta.classList.remove("d-none");
+  setTimeout(() => alerta.classList.add("d-none"), 2000);
 }
 
 function resetearFormulario() {
-  document.getElementById("formulario").reset();
-  document.getElementById("id").readOnly = false;
+  document.getElementById("formulario").reset();
+  document.getElementById("id").readOnly = false;
 }
 
 function editar(id) {
-  fetch(api + "/" + id)
-    .then(res => res.json())
-    .then(r => {
-      document.getElementById("id").value = r.id;
-      document.getElementById("ano").value = r.ano;
-      document.getElementById("semana").value = r.semana;
-      document.getElementById("clasificacion").value = r.clasificacion;
-      document.getElementById("id").readOnly = true;
-      window.scrollTo(0,0);
-    })
+  fetch(api + "/" + id)
+    .then(res => res.json())
+    .then(r => {
+      document.getElementById("id").value = r.id;
+      document.getElementById("ano").value = r.ano;
+      document.getElementById("semana").value = r.semana;
+      document.getElementById("clasificacion").value = r.clasificacion;
+      document.getElementById("id").readOnly = true;
+      window.scrollTo(0,0);
+    })
     .catch(error => {
-        console.error("Error al editar el registro:", error);
-        mostrarAlerta("Error al cargar el registro para edición.", "danger");
+      console.error("Error al editar el registro:", error);
+      mostrarAlerta("Error al cargar el registro para edición.", "danger");
     });
 }
-
+// --- EDITAR ---
+function editar(id) {
+  fetch(api + "/" + id)
+    .then(res => res.json())
+    .then(r => {
+      document.getElementById("id").value = r.id;
+      document.getElementById("ano").value = r.ano;
+      document.getElementById("semana").value = r.semana;
+      document.getElementById("clasificacion").value = r.clasificacion;
+      document.getElementById("id").readOnly = true;
+      window.scrollTo(0,0);
+    })
+    .catch(error => {
+      mostrarAlerta("Error al cargar el registro para edición.", "danger");
+    });
+}
 // MODAL para eliminar
 function confirmarEliminar(id) {
-  idEliminar = id;
-  const modal = new bootstrap.Modal(document.getElementById('modalEliminar'));
-  modal.show();
+  idEliminar = id;
+  const modal = new bootstrap.Modal(document.getElementById('modalEliminar'));
+  modal.show();
 }
 
 document.getElementById("confirmarEliminarBtn").onclick = function() {
-  fetch(api + "/" + idEliminar, {method: "DELETE"})
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        mostrarAlerta("Registro eliminado", "danger");
-        cargarDatos(); // Recargar datos y gráficos
-    })
+  fetch(api + "/" + idEliminar, {method: "DELETE"})
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      mostrarAlerta("Registro eliminado", "danger");
+      cargarDatos(); // Recargar datos y gráficos
+    })
     .catch(error => {
-        console.error("Error al eliminar el registro:", error);
-        mostrarAlerta("Error al eliminar el registro.", "danger");
+      console.error("Error al eliminar el registro:", error);
+      mostrarAlerta("Error al eliminar el registro.", "danger");
     });
-  bootstrap.Modal.getInstance(document.getElementById('modalEliminar')).hide();
-  resetearFormulario();
+  bootstrap.Modal.getInstance(document.getElementById('modalEliminar')).hide();
+  resetearFormulario();
 };
 
 document.getElementById("formulario").onsubmit = function(e) {
-  e.preventDefault();
-  const id = Number(document.getElementById("id").value);
-  const ano = Number(document.getElementById("ano").value);
-  const semana = Number(document.getElementById("semana").value);
-  const clasificacion = document.getElementById("clasificacion").value.trim();
+  e.preventDefault();
+  const id = Number(document.getElementById("id").value);
+  const ano = Number(document.getElementById("ano").value);
+  const semana = Number(document.getElementById("semana").value);
+  const clasificacion = document.getElementById("clasificacion").value.trim();
 
-  // Validaciones avanzadas
-  if (!id || !ano || !semana || !clasificacion) {
-    mostrarAlerta("Todos los campos son obligatorios", "danger");
-    return;
-  }
-  if (ano < 2000 || ano > 2100) {
-    mostrarAlerta("Año fuera de rango (2000-2100)", "danger");
-    return;
-  }
-  if (semana < 1 || semana > 53) {
-    mostrarAlerta("Semana debe ser entre 1 y 53", "danger");
-    return;
-  }
-  if (clasificacion.length < 3) {
-    mostrarAlerta("Clasificación debe tener al menos 3 caracteres", "danger");
-    return;
-  }
-  if (!document.getElementById("id").readOnly && registrosActuales.find(r => r.id === id)) {
-    mostrarAlerta("El ID ya existe. Usa otro o edita.", "danger");
-    return;
-  }
+  // Validaciones avanzadas
+  if (!id || !ano || !semana || !clasificacion) {
+    mostrarAlerta("Todos los campos son obligatorios", "danger");
+    return;
+  }
+  if (ano < 2000 || ano > 2100) {
+    mostrarAlerta("Año fuera de rango (2000-2100)", "danger");
+    return;
+  }
+  if (semana < 1 || semana > 53) {
+    mostrarAlerta("Semana debe ser entre 1 y 53", "danger");
+    return;
+  }
+  if (clasificacion.length < 3) {
+    mostrarAlerta("Clasificación debe tener al menos 3 caracteres", "danger");
+    return;
+  }
+  if (!document.getElementById("id").readOnly && registrosActuales.find(r => r.id === id)) {
+    mostrarAlerta("El ID ya existe. Usa otro o edita.", "danger");
+    return;
+  }
 
-  const registro = { id, ano, semana, clasificacion };
+  const registro = { id, ano, semana, clasificacion };
 
   // Determinar si es POST (crear) o PUT (actualizar)
   const method = document.getElementById("id").readOnly ? "PUT" : "POST";
   const url = document.getElementById("id").readOnly ? `${api}/${id}` : api;
 
-  fetch(url, {
-    method: method,
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify(registro)
-  })
-    .then(res => res.json())
-    .then(resp => {
-      if (resp && resp.message && resp.message === "Item creado") {
-        mostrarAlerta("Guardado correctamente");
-        cargarDatos(); // Recargar datos y gráficos
-        resetearFormulario();
-      } else if (resp && resp.message && resp.message === "Item actualizado") { // Asumiendo que tu API devuelve este mensaje
-          mostrarAlerta("Actualizado correctamente");
-          cargarDatos(); // Recargar datos y gráficos
-          resetearFormulario();
+  fetch(url, {
+    method: method,
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(registro)
+  })
+    .then(res => res.json())
+    .then(resp => {
+      if (resp && resp.message && resp.message === "Item creado") {
+        mostrarAlerta("Guardado correctamente");
+        cargarDatos(); // Recargar datos y gráficos
+        resetearFormulario();
+      } else if (resp && resp.message && resp.message === "Actualizado") {
+        mostrarAlerta("Actualizado correctamente");
+        cargarDatos(); // Recargar datos y gráficos
+        resetearFormulario();
       }
       else if (resp && resp.error) {
-        mostrarAlerta("Error: " + resp.error, "danger");
-      } else {
-        mostrarAlerta("Error desconocido al guardar", "danger");
-      }
-    })
-    .catch(error => {
-      console.error("Error de red al guardar:", error);
-      mostrarAlerta("Error de red al guardar. Asegúrate de que la API esté funcionando.", "danger");
-    });
+        mostrarAlerta("Error: " + resp.error, "danger");
+      } else {
+        mostrarAlerta("Error desconocido al guardar", "danger");
+      }
+    })
+    .catch(error => {
+      console.error("Error de red al guardar:", error);
+      mostrarAlerta("Error de red al guardar. Asegúrate de que la API esté funcionando.", "danger");
+    });
 };
 
 // --- Funciones para crear y actualizar los gráficos con Chart.js ---
@@ -201,7 +216,7 @@ function updateCharts(data) {
                         position: 'top',
                     },
                     title: {
-                        display: false, // El título ya está en la tarjeta HTML
+                        display: false,
                         text: 'Casos por Clasificación'
                     }
                 }
@@ -253,7 +268,7 @@ function updateCharts(data) {
                 },
                 plugins: {
                     legend: {
-                        display: false // No se necesita leyenda con un solo dataset
+                        display: false
                     }
                 }
             }
@@ -271,7 +286,7 @@ function updateCharts(data) {
     const semanaData = semanaLabels.map(week => semanaCounts[week] || 0); // 0 si no hay datos para la semana
 
     const ctxSemana = document.getElementById('semanaChart');
-    if (ctxSemana) { // Asegurarse de que el canvas existe
+    if (ctxSemana) {
         const context = ctxSemana.getContext('2d');
         if (semanaChart) semanaChart.destroy();
         semanaChart = new Chart(context, {
@@ -283,8 +298,8 @@ function updateCharts(data) {
                     data: semanaData,
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     borderColor: 'rgba(75, 192, 192, 1)',
-                    tension: 0.3, // Suavizar la línea
-                    fill: true // Rellenar el área bajo la línea
+                    tension: 0.3,
+                    fill: true
                 }]
             },
             options: {
@@ -314,6 +329,22 @@ function updateCharts(data) {
     }
 }
 
+// --- BOTÓN PARA IMPORTAR/RECARGAR DESDE S3 ---
+document.getElementById("btnRecargarS3").onclick = function() {
+    fetch("http://3.82.141.182/recargar", { method: "POST" })
+        .then(res => res.json())
+        .then(resp => {
+            if (resp && resp.message) {
+                mostrarAlerta(resp.message, "success");
+                cargarDatos();
+            } else if (resp && resp.error) {
+                mostrarAlerta("Error: " + resp.error, "danger");
+            }
+        })
+        .catch(() => {
+            mostrarAlerta("Error de red al recargar desde S3", "danger");
+        });
+};
+
 // Inicializar la carga de la tabla y los gráficos cuando la página esté lista
-// Esto reemplaza la llamada directa a cargarDatos() al final del archivo.
 document.addEventListener('DOMContentLoaded', cargarDatos);
