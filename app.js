@@ -66,22 +66,7 @@ function editar(id) {
       mostrarAlerta("Error al cargar el registro para edición.", "danger");
     });
 }
-// --- EDITAR ---
-function editar(id) {
-  fetch(api + "/" + id)
-    .then(res => res.json())
-    .then(r => {
-      document.getElementById("id").value = r.id;
-      document.getElementById("ano").value = r.ano;
-      document.getElementById("semana").value = r.semana;
-      document.getElementById("clasificacion").value = r.clasificacion;
-      document.getElementById("id").readOnly = true;
-      window.scrollTo(0,0);
-    })
-    .catch(error => {
-      mostrarAlerta("Error al cargar el registro para edición.", "danger");
-    });
-}
+
 // MODAL para eliminar
 function confirmarEliminar(id) {
   idEliminar = id;
